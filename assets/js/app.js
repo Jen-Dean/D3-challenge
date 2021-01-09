@@ -52,6 +52,17 @@ function xScale(stateData, selectXAxis) {
     return xLinearScale;
 }
 
+function yScale(stateData, selectYAxis) {
+    
+    var yLinearScale = d3.scaleLinear()
+        .domain([d3.min(stateData, d => d[selectYAxis]),
+            d3.max(stateData, d => d[selectYAxis]) // * something???
+        ])
+        .range([height, 0]);
+
+    return yLinearScale;
+}
+
 // Update the xAxis when you click on a different label
 function renderAxis(newXScale, xAxis) {
     var bottomAxis = d3.axisBttom(newXScale);
@@ -110,3 +121,41 @@ function updateToolTip(selectXAxis, pointsGroup) {
 
     return pointsGroup;
 }
+// CSV file & Dataretrieval using d3
+
+d3.csv("data.csv").then(function(stateData, err) {
+    if (err) throw err;
+
+    stateData.forEach(function(d) {
+        stateData.poverty = +stateData.poverty;
+        stateData.age = +stateData.age;
+        stateData.income = +stateData.income;
+        stateData.healthcare = +stateData.healthcare;
+        stateData.obesity = +stateData.obesity;
+        stateData.smokes = +stateData.smokes;
+    });
+
+    var xLinearScale = xScale(stateData, selectXAxis);
+
+    var yLinearScale = yScale(stateData, selectYAxis);
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
