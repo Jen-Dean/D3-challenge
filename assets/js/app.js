@@ -123,8 +123,8 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
         stateData.smokes = +stateData.smokes;
     });
 
-    var xLinearScale = xScale(stateData, selectXAxis);
-    var yLinearScale = yScale(stateData, selectYAxis);
+    var xLinearScale = xScale(stateData, "poverty");
+    var yLinearScale = yScale(stateData, "obesity");
 
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
