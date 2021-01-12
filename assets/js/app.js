@@ -171,7 +171,7 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
         .attr("transform", `translate(${width / 2}, ${height + 20})`);
 
     var povertyLabel = stateLabelsGroup.append("text")
-        .attr("x", 0)
+        .attr("x", -200)
         .attr("y", 20)
         .attr("value", "poverty")
         .classed("active", true)
@@ -179,35 +179,35 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
 
     var obesityLabel = stateLabelsGroup.append("text")
         .attr("x", 0)
-        .attr("y", 40)
+        .attr("y", 20)
         .attr("value", "obesity")
         .classed("inactive", true)
         .text("State Obesity Level");
 
     var ageLabel = stateLabelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 60)
+        .attr("x", 150)
+        .attr("y", 20)
         .attr("value", "age")
         .classed("inactive", true)
         .text("Person Age");
 
     var incomeLabel = stateLabelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 80)
+        .attr("x", -200)
+        .attr("y", 40)
         .attr("value", "income")
         .classed("inactive", true)
         .text("Income Level");
 
     var healthcareLabel = stateLabelsGroup.append("text")
         .attr("x", 0)
-        .attr("y", 100)
+        .attr("y", 40)
         .attr("value", "healthcare")
         .classed("inactive", true)
         .text("Healthcare");
 
     var smokesLabel = stateLabelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 120)
+        .attr("x", 100)
+        .attr("y", 40)
         .attr("value", "snokes")
         .classed("inactive", true)
         .text("Smoking");
