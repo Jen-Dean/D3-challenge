@@ -33,7 +33,7 @@ function xScale(stateData, selectXAxis) {
 
     var xLinearScale = d3.scaleLinear()
         .domain([d3.min(stateData, d => d[selectXAxis]),
-        d3.max(stateData, d => d[selectXAxis]) // * something???
+        d3.max(stateData, d => d[selectXAxis])
         ])
         .range([0, width]);
 
@@ -44,7 +44,7 @@ function yScale(stateData, selectYAxis) {
 
     var yLinearScale = d3.scaleLinear()
         .domain([d3.min(stateData, d => d[selectYAxis]),
-        d3.max(stateData, d => d[selectYAxis]) // * something???
+        d3.max(stateData, d => d[selectYAxis])
         ])
         .range([height, 0]);
 
@@ -52,8 +52,8 @@ function yScale(stateData, selectYAxis) {
 }
 
 // Update the xAxis when you click on a different label
-function renderAxis(newXScale, xAxis) {
-    var bottomAxis = d3.axisBttom(newXScale);
+function renderXAxis(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
 
     xAxis.transition()
         .duration(1000)
@@ -61,18 +61,20 @@ function renderAxis(newXScale, xAxis) {
 
     return xAxis;
 }
-// Create New Plot points based on the axis that you chose
-function renderPoints(pointsGroup, newXScale, selectXAxis) {
 
-    pointsGroup.transition()
+// Create New Plot points based on the axis that you chose
+function renderPoints(circleGroup, newXScale, selectXAxis) {
+
+    circleGroup.transition()
         .duration(1000)
-        .attr("cx", d => newXScale(d[selectXAxis]));
-    return pointsGroup;
+        .attr("cx", d => newXScale(d[selectXAxis]));;
+
+    return circleGroup;
 }
 
 // New Tooltip updates with new selections
 
-function updateToolTip(selectXAxis, pointsGroup) {
+function updateToolTip(selectXAxis, circleGroup) {
 
     var xtipLabel;
 
@@ -94,20 +96,20 @@ function updateToolTip(selectXAxis, pointsGroup) {
         .attr("class", "tooltip")
         .offset([0, 0])
         .html(function (d) {
-            return (`${d.state}<br>${tipLabel} ${d[selectXAxis]}`);
+            return (`${d.state}<br>${xtipLabel} ${d[selectXAxis]}`);
         });
 
-    pointsGroup.call(toolTip);
+    circleGroup.call(toolTip);
 
-    pointsGroup.on("mouseover", function (d) {
-        toolTip.show(d);
+    circleGroup.on("mouseover", function (d) {
+        toolTip.show(d, this);
     });
 
-    pointsGroup.on("mouseout", function (d) {
+    circleGroup.on("mouseout", function (d, index) {
         toolTip.hide(d)
     })
 
-    return pointsGroup;
+    return circleGroup;
 }
 // CSV file & Dataretrieval using d3
 
@@ -123,8 +125,8 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
         stateData.smokes = +stateData.smokes;
     });
 
-    var xLinearScale = xScale(stateData, "poverty");
-    var yLinearScale = yScale(stateData, "obesity");
+    var xLinearScale = xScale(stateData, selectXAxis);
+    var yLinearScale = yScale(stateData, selectYAxis);
 
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
@@ -137,25 +139,24 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
     scatterGroup.append("g")
         .call(leftAxis);
 
-    var pointsGroup = scatterGroup.selectAll("points")
+    var circleGroup = scatterGroup.selectAll("circle")
         .data(stateData)
         .enter()
-        .append("points")
+        .append("circle")
         .attr("cx", d => xLinearScale(d[selectXAxis]))
         .attr("cy", d => yLinearScale(d[selectYAxis]))
-        .attr("r", 25)
+        .attr("r", 15)
         .classed("stateCircle", true)
 
     // CREATE GROUP FOR STATE LABELS
 
-    var abbrLabels = scatterGroup.selectAll(null)
+    var abbrLabels = circleGroup
+        .selectAll("text")
         .data(stateData)
         .enter()
-        .append("text");
-    
-    abbrLabels
+        .append("text")
         .attr("x", function (d) {
-            return xLinearScale(d.poverty)
+            return xLinearScale(d[selectXAxis])
         })
         .attr("y", function (d) {
             return yLinearScale(d[selectYAxis])
@@ -213,7 +214,7 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
         .text("Smoking");
 
 
-    // APENDING THE Y AXIS
+    // APPENDING THE Y AXIS
 
     scatterGroup.append("text")
         .attr("transform", "rotate(-90)")
@@ -221,9 +222,9 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .classed("aText", true)
-        .text("Obesity????");
+        .text("Obesity");
 
-    var pointsGroup = updateToolTip(selectXAxis, pointsGroup);
+    var circleGroup = updateToolTip(selectXAxis, circleGroup);
 
     stateLabelsGroup.selectAll("text")
         .on("click", function () {
@@ -234,11 +235,37 @@ d3.csv("assets/data/data.csv").then(function (stateData, err) {
 
                 xLinearScale = xScale(stateData, selectXAxis);
 
-                xAxis = renderAxis(xLinearScale, xAxis);
+                xAxis = renderXAxis(xLinearScale, xAxis);
 
-                pointsGroup = renderPoints(pointsGroup, xLinearScale, selectXAxis);
+                circleGroup = renderPoints(circleGroup, xLinearScale, selectXAxis);
 
-                pointsGroup = updateToolTip(selectXAxis, pointsGroup); // This is the same as the variable above???
+                circleGroup = updateToolTip(selectXAxis, circleGroup); // This is the same as the variable above???
+                
+                // Move all the labels as well
+                abbrLabels = circleGroup
+                    .selectAll(null)
+                    .data(stateData)
+                    .enter()
+                    .append("text")
+                    .attr("x", function (d) {
+                        return xLinearScale(d[selectXAxis])
+                    })
+                    .attr("y", function (d) {
+                        return yLinearScale(d[selectYAxis])
+                    })
+                    .text(function (d) {
+                        return d.abbr
+                    })
+                    .classed("stateText", true)
+
+                // Reset the "Active and Inactive states" to the correct class
+
+                povertyLabel.classed("inactive", true);
+                obesityLabel.classed("inactive", true);
+                ageLabel.classed("inactive", true);
+                incomeLabel.classed("inactive", true);
+                healthcareLabel.classed("inactive", true);
+                smokesLabel.classed("inactive", true);
 
                 if (selectXAxis === "poverty") {
                     povertyLabel
