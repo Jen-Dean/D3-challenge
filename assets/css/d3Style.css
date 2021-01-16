@@ -26,9 +26,18 @@
 /* font size dependent on radius, see app.js */
 .stateText {
   font-family: sans-serif;
-  fill: black;
+  fill: white;
   text-anchor: middle;
   font-size: 10px;
+}
+
+.titleText {
+  font-family: sans-serif;
+  fill: black;
+  text-anchor: middle;
+  font-size: 40px;
+  font-weight: bolder;
+  font-variant-caps: titling-caps;
 }
 
 .stateCircle {
